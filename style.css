@@ -1,6 +1,7 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
+  background-image: url("fundonasa.jpg");
   background-color: #0b0c10;
   color: #c5c6c7;
   display: flex;
