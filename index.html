@@ -8,7 +8,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>NASA Picture Explorer</h1>
+    <h1 id="title">NASA Picture Explorer</h1>
     <div class="controls">
       <input type="date" id="dateInput" max="" />
       <button id="btnFetch">Buscar</button>
@@ -16,7 +16,12 @@
       <button id="btnPrev">◀ Anterior</button>
       <button id="btnNext">Próxima ▶</button>
     </div>
-    <div id="displayArea" class="display-area"></div>
+    <div id="displayArea" class="display-area">
+      <div id="media"></div>
+      <p id="description"></p>
+      <span id="dateDisplay"></span>
+      <p id="errorMsg" class="error"></p>
+    </div>
   </div>
 
   <script src="script.js"></script>
