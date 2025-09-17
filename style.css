@@ -1,112 +1,169 @@
-/* Reset simples */
-* {
-  box-sizing: border-box;
+@media (max-width: 800px) {
+  .logo-barra {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center; 
+    padding-left: 0;
+    gap: 32px;
+    margin-bottom: 10px;
+  }
+
+  .logo-senai,
+  .logo-nasa {
+    width: 110px;
+    height: 28px;
+    margin: 0;
+  }
+  .logo-nasa {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 500px) {
+  .logo-barra {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 10px;
+    padding-left: 0;
+  }
+
+  .logo-senai,
+  .logo-nasa {
+    width: 80px;
+    height: 20px;
+    margin: 0;
+  }
+  .logo-nasa {
+    margin-left: 0;
+  }
 }
 
 body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #0a0a23;
-  color: #cfd8dc;
-  display: flex;
-  justify-content: center;
-  padding: 20px;
-}
-
-.container {
-  max-width: 700px;
-  width: 100%;
-}
-
-h1 {
-  color: #82cfff;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(180deg, #ff0000);
+  background-image: url('fundonasa.png');
+  min-height: 100vh;
+  background-size: cover;     
+  background-position: center; 
+  background-repeat: no-repeat;
   text-align: center;
-  margin-bottom: 20px;
-  font-weight: 700;
+  padding: 50px;
 }
 
-.controls {
+main.conteudo {
+  min-height: 60vh; 
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-barra {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; 
+  padding-left: 20px;
+  margin-bottom: 0;
+  gap: 0px;
+}
+
+.logo-senai {
+  width: 200px;
+  height: 40px;
+  object-fit: contain;
+  margin: 5px 0;
+}
+
+.logo-nasa {
+  width: 80px;
+  height: 40px;
+  object-fit: contain;
+  margin-left: -35px;
+}
+
+.titulo-central {
+  text-align: center;
+  color: #ffffff;
+  font-size: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0 0 5px 0;
+  display: flex;
+  align-items: center;
   justify-content: center;
   gap: 10px;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+
+.subtitulo-central {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-top: 5px;
   margin-bottom: 20px;
+  opacity: 0.85;
+  letter-spacing: 0.5px;
 }
 
-.controls input[type="date"] {
-  padding: 8px 12px;
-  border-radius: 5px;
-  border: none;
-  font-size: 1rem;
-  background-color: #1a1a3d;
-  color: #cfd8dc;
+.painel-controle {
+  margin: 20px 0;
 }
 
-.controls button {
-  background-color: #2f80ed;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 14px;
-  color: white;
-  font-weight: 600;
+input[type="date"], button {
+  padding: 10px 15px;
+  margin: 5px;
+  border-radius: 6px;
+  background-color: #ff34c2;
+  color: #fff;
+  font-size: 15px;
+  box-shadow: 0 4px 8px -2px #000000; 
+}
+
+button {
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-size: 1rem;
+  background-color: #ff34c2;
+  border: none;
+  transition: transform 0.2s, background 0.3s;
 }
 
-.controls button:hover {
-  background-color: #56a3ff;
+button:hover {
+  background-color: #c77dff;
+  transform: scale(1.05);
 }
 
-.display-area {
-  background-color: #1a1a3d;
-  padding: 20px;
-  border-radius: 10px;
-  min-height: 350px;
-  box-shadow: 0 0 12px #0e0e2a;
-  transition: opacity 0.4s ease;
-}
-
-.display-area h2 {
-  margin-top: 0;
-  color: #82cfff;
-  font-weight: 700;
-  text-align: center;
-}
-
-.display-area p.date {
-  text-align: center;
-  font-style: italic;
-  color: #a0b8d4;
-  margin-bottom: 20px;
-}
-
-.display-area img,
-.display-area iframe {
+.data-exibida {
   display: block;
-  max-width: 100%;
-  border-radius: 10px;
-  margin: 0 auto 20px auto;
-  box-shadow: 0 0 10px #234;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #ffffff;
 }
 
-.display-area p.description {
-  font-size: 1rem;
-  line-height: 1.5;
-  white-space: pre-line;
-  text-align: justify;
-  color: #d0dbe9;
+#tituloMidia {
+  color: #ffffff;         
+  font-size: 32px;
+  margin-bottom: 10px;
 }
 
-/* Responsividade */
-@media (max-width: 600px) {
-  .controls {
-    flex-direction: column;
-    gap: 8px;
-  }
+#textoDescricao {
+  color: #ffffff;
+  font-size: 0.9rem; 
+  margin-bottom: 5px;
+  text-align: left;
+}
 
-  .controls button,
-  .controls input[type="date"] {
-    width: 100%;
-  }
+.card-resultado {
+  background: rgba(255, 0, 140, 0.7);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  padding: 32px 20px 24px 20px;
+  max-width: 600px;
+  margin: 0 auto 30px auto;
+  backdrop-filter: blur(2px);
+  display: none;
+}
+
+.card-resultado.visivel {
+  display: block;
 }
