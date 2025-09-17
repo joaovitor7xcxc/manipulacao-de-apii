@@ -1,130 +1,93 @@
-const apiKey = "imfhCCMQHpAh0c1mdNUMhoaaJjxlz7J3i9MKv3Z5";
-const apiUrl = `https://api.nasa.gov/planetary/apod?api_key=${apiKey}`;
+document.addEventListener('DOMContentLoaded', () => {
+    const campoData = document.getElementById('campoData');
+    const btnBuscar = document.getElementById('btnBuscar');
+    const btnToday = document.getElementById('todayBtn');
+    const btnPrev = document.getElementById('prevBtn');
+    const btnNext = document.getElementById('nextBtn');
+    const tituloMidia = document.getElementById('tituloMidia');
+    const caixaMidia = document.getElementById('caixaMidia');
+    const textoDescricao = document.getElementById('textoDescricao');
+    const textoData = document.getElementById('textoData');
+    const cardResultado = document.querySelector('.card-resultado');
 
-const dateInput = document.getElementById("dateInput");
-const btnFetch = document.getElementById("btnFetch");
-const btnToday = document.getElementById("btnToday");
-const btnPrev = document.getElementById("btnPrev");
-const btnNext = document.getElementById("btnNext");
-const displayArea = document.getElementById("displayArea");
+    const API_KEY = 'imfhCCMQHpAh0c1mdNUMhoaaJjxlz7J3i9MKv3Z5';
 
-// Define a data máxima permitida no input (hoje)
-const today = new Date();
-dateInput.max = today.toISOString().slice(0, 10);
-dateInput.value = dateInput.max; // Começa no dia atual
+    if (cardResultado) cardResultado.classList.remove('visivel');
 
-// Função para formatar data no formato YYYY-MM-DD
-function formatDate(date) {
-  return date.toISOString().slice(0, 10);
-}
+    async function buscarFoto(dataManual) {
+        const data = dataManual || campoData.value;
+        if (!data) {
+            if (tituloMidia) tituloMidia.textContent = '';
+            if (caixaMidia) caixaMidia.innerHTML = '';
+            if (textoDescricao) textoDescricao.textContent = '';
+            if (textoData) textoData.textContent = 'Selecione uma data!';
+            if (cardResultado) cardResultado.classList.remove('visivel');
+            return;
+        }
 
-// Carrega os dados da NASA para uma data específica
-async function loadAPOD(date) {
-  displayArea.style.opacity = 0.5;
-  displayArea.innerHTML = "<p>Carregando...</p>";
+        if (textoData) textoData.textContent = 'Buscando...';
+        if (tituloMidia) tituloMidia.textContent = '';
+        if (caixaMidia) caixaMidia.innerHTML = '';
+        if (textoDescricao) textoDescricao.textContent = '';
 
-  try {
-    const response = await fetch(`${apiUrl}&date=${date}`);
-    if (!response.ok) {
-      if (response.status === 403 || response.status === 429) {
-        throw new Error(
-          "Limite de requisições da API excedido ou chave inválida. Registre sua própria chave em api.nasa.gov."
-        );
-      } else {
-        throw new Error(`Erro na API: ${response.status} ${response.statusText}`);
-      }
+        try {
+            const url = `https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&date=${data}`;
+            const resposta = await fetch(url);
+            if (!resposta.ok) throw new Error('Erro ao buscar dados da NASA');
+            const dados = await resposta.json();
+
+            if (tituloMidia) tituloMidia.textContent = dados.title || '';
+            if (textoDescricao) textoDescricao.textContent = dados.explanation || '';
+            if (textoData) textoData.textContent = dados.date || '';
+
+            if (dados.media_type === 'image') {
+                if (caixaMidia) caixaMidia.innerHTML = `<img src="${dados.url}" alt="${dados.title}" style="max-width:100%; max-height:500px; border-radius:8px; display:block; margin:auto; box-shadow: 0 8px 24px rgba(0,0,0,0.5);">`;
+            } else if (dados.media_type === 'video') {
+                if (caixaMidia) caixaMidia.innerHTML = `<iframe src="${dados.url}" frameborder="0" allowfullscreen style="width:100%;min-height:400px;border-radius:8px;"></iframe>`;
+            } else {
+                if (caixaMidia) caixaMidia.innerHTML = `<p>Tipo de mídia não suportado.</p>`;
+            }
+            if (cardResultado) cardResultado.classList.add('visivel');
+            campoData.value = data; // Atualiza o campo de data
+        } catch (erro) {
+            if (tituloMidia) tituloMidia.textContent = '';
+            if (caixaMidia) caixaMidia.innerHTML = '';
+            if (textoDescricao) textoDescricao.textContent = '';
+            if (textoData) textoData.textContent = 'Erro ao buscar dados!';
+            if (cardResultado) cardResultado.classList.add('visivel');
+        }
     }
 
-    const data = await response.json();
+    if (btnBuscar) btnBuscar.addEventListener('click', () => buscarFoto());
 
-    if (data.code) {
-      // Quando API retorna erro no JSON (ex: data inválida)
-      displayArea.innerHTML = `<p style="color:#ffc107;">${data.msg}</p>`;
-      displayArea.style.opacity = 1;
-      return;
-    }
+    // Botão Hoje
+    if (btnToday) btnToday.addEventListener('click', () => {
+        const hoje = new Date();
+        const yyyy = hoje.getFullYear();
+        const mm = String(hoje.getMonth() + 1).padStart(2, '0');
+        const dd = String(hoje.getDate()).padStart(2, '0');
+        const dataHoje = `${yyyy}-${mm}-${dd}`;
+        campoData.value = dataHoje;
+        buscarFoto(dataHoje);
+    });
 
-    let mediaHTML = "";
-    if (data.media_type === "image") {
-      mediaHTML = `<img src="${data.url}" alt="${data.title}" loading="lazy">`;
-    } else if (data.media_type === "video") {
-      mediaHTML = `<iframe src="${data.url}" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" ></iframe>`;
-    } else {
-      mediaHTML = "<p>Tipo de mídia não suportado.</p>";
-    }
+    // Botão Anterior
+    if (btnPrev) btnPrev.addEventListener('click', () => {
+        if (!campoData.value) return;
+        const dataAtual = new Date(campoData.value);
+        dataAtual.setDate(dataAtual.getDate() - 1);
+        const dataAnterior = dataAtual.toISOString().split('T')[0];
+        campoData.value = dataAnterior;
+        buscarFoto(dataAnterior);
+    });
 
-    const textoUmbraPT = `A sombra escura interna do planeta Terra é chamada de umbra. Com formato semelhante a um cone que se estende no espaço, ela tem uma seção transversal circular que é mais facilmente vista durante um eclipse lunar. Na noite de 7 para 8 de setembro, a Lua Cheia passou perto do centro do cone umbral da Terra, proporcionando um espetáculo para observadores do eclipse em várias partes do planeta, incluindo Antártica, Austrália, Ásia, Europa e África.
-
-Essa imagem em time-lapse foi registrada na cidade de Zhangjiakou, na China, usando fotos consecutivas do eclipse lunar total. A sequência mostra a seção transversal curva da sombra umbral deslizando pela superfície da Lua, da esquerda para a direita.
-
-A luz do Sol, ao ser espalhada pela atmosfera da Terra e entrar na umbra, faz a superfície lunar parecer avermelhada durante a totalidade do eclipse. Porém, próximo à borda da umbra, a borda da Lua eclipsada mostra uma tonalidade azul distinta. Isso acontece porque a luz azul da Lua eclipsada é originada por raios solares que passam por camadas altas da estratosfera terrestre, onde o ozônio espalha a luz vermelha e transmite a azul.
-
-Durante a fase total desse eclipse lunar, a Lua ficou completamente dentro da umbra da Terra por cerca de 83 minutos.`;
-
-    let descriptionToShow = data.explanation;
-
-    // Se for a data 2025-09-11, usa o texto em português
-    if (data.date === "2025-09-11") {
-      descriptionToShow = textoUmbraPT;
-    }
-
-    displayArea.innerHTML = `
-      <h2>${data.title}</h2>
-      <p class="date">${data.date}</p>
-      ${mediaHTML}
-      <p class="description">${descriptionToShow}</p>
-    `;
-  } catch (error) {
-    displayArea.innerHTML = `<p style="color:#ff6b6b;">Erro: ${error.message}</p>`;
-  } finally {
-    displayArea.style.opacity = 1;
-  }
-}
-
-// Botão buscar
-btnFetch.addEventListener("click", () => {
-  if (!dateInput.value) {
-    alert("Por favor, selecione uma data.");
-    return;
-  }
-  loadAPOD(dateInput.value);
+    // Botão Próxima
+    if (btnNext) btnNext.addEventListener('click', () => {
+        if (!campoData.value) return;
+        const dataAtual = new Date(campoData.value);
+        dataAtual.setDate(dataAtual.getDate() + 1);
+        const dataProxima = dataAtual.toISOString().split('T')[0];
+        campoData.value = dataProxima;
+        buscarFoto(dataProxima);
+    });
 });
-
-// Botão hoje
-btnToday.addEventListener("click", () => {
-  dateInput.value = dateInput.max;
-  loadAPOD(dateInput.value);
-});
-
-// Botão anterior
-btnPrev.addEventListener("click", () => {
-  let date = new Date(dateInput.value);
-  date.setDate(date.getDate() - 1);
-
-  const firstDate = new Date("1995-06-16");
-  if (date < firstDate) {
-    alert("Não há imagens anteriores a 16 de junho de 1995.");
-    return;
-  }
-
-  dateInput.value = formatDate(date);
-  loadAPOD(dateInput.value);
-});
-
-// Botão próxima
-btnNext.addEventListener("click", () => {
-  let date = new Date(dateInput.value);
-  date.setDate(date.getDate() + 1);
-
-  const maxDate = new Date(dateInput.max);
-  if (date > maxDate) {
-    alert("Não pode selecionar uma data futura.");
-    return;
-  }
-
-  dateInput.value = formatDate(date);
-  loadAPOD(dateInput.value);
-});
-
-// Carregar foto do dia atual ao abrir a página
-loadAPOD(dateInput.value);
